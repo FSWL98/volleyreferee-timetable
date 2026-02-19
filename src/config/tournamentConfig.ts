@@ -81,8 +81,8 @@ const tournamentConfig: Record<TournamentId, TournamentConfig> = {
 };
 
 // Функция для получения конфига турнира по ID
-export const getTournamentConfig = (tournamentId: TournamentId): TournamentConfig | null => {
-    return tournamentConfig[tournamentId] || null;
+export const getTournamentConfig = (tournamentId: TournamentId): TournamentConfig => {
+    return tournamentConfig[tournamentId];
 };
 
 // Функция для получения полного диапазона

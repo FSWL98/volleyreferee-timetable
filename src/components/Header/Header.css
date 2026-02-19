@@ -1,0 +1,31 @@
+.header {
+    background: #76b5e1;
+    text-align: center;
+}
+
+.header__content {
+    display: flex;
+    gap: 32px;
+}
+
+.header__logo {
+    max-height: 64px;
+}
+
+.nav-links {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+}
+
+.nav-links__item {
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+}
+
+.nav-links__item:hover {
+    text-decoration: underline;
+}

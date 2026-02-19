@@ -12,7 +12,7 @@ export interface UseGoogleSheetsOptions {
     dependencies?: any[];
 }
 
-export interface UseGoogleSheetsResult<T = any[]> {
+export interface UseGoogleSheetsResult<T = string[][]> {
     data: T | null;
     headers: string[];
     loading: boolean;
