@@ -15,8 +15,8 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
     }
 
     return (
-        <div className="modal">
-            <div className="modal__content">
+        <div className="modal" onClick={onClose}>
+            <div className="modal__content" onClick={(ev) => ev.stopPropagation()}>
                 <div className="modal__header">
                     <h3 className="modal__title">{title}</h3>
                     <button className="modal__close" onClick={onClose}>

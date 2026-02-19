@@ -40,3 +40,23 @@
     display: block;
     margin-bottom: 8px;
 }
+
+.match__select {
+    appearance: none;
+    border: none;
+    border-radius: 16px;
+    padding: 12px 16px;
+    background: #76b5e1;
+    cursor: pointer;
+    color: #fff;
+    font-weight: bold;
+}
+
+.match__select_undo {
+    background: rgba(214, 8, 8, 1);
+}
+
+.match__select_disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

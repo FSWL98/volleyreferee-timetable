@@ -26,23 +26,26 @@ export const parseSchedule = (rows: string[][], config: TournamentConfig): Calen
             const homeTeam = row[columns.homeTeam]?.trim() || '';
             const awayTeam = row[columns.awayTeam]?.trim() || '';
             const matchNumber = columns.matchNumber ? row[columns.matchNumber]?.trim() : '';
-            const gamesCount = columns.gamesCount ? row[columns.gamesCount] : 0;
+            const gamesCount = columns.gamesCount ? row[columns.gamesCount] : '0';
             const additionalInfo = columns.additionalInfo ? row[columns.additionalInfo]?.trim() : '';
 
             const date = parseDate(dateStr, config.dateFormat);
             const time = parseTime(timeStr);
 
-            // Комбинируем дату и время
             const startDateTime = new Date(date);
             startDateTime.setHours(time.hours, time.minutes, 0);
 
-            // Время окончания (добавляем 2 часа по умолчанию)
             const endDateTime = new Date(startDateTime);
-            endDateTime.setHours(endDateTime.getHours() + 1);
-            endDateTime.setMinutes(endDateTime.getMinutes() + 30);
+            if (parseInt(gamesCount, 10) > 0) {
+                endDateTime.setHours(endDateTime.getHours() + parseInt(gamesCount, 10));
+                endDateTime.setMinutes(endDateTime.getMinutes() + 30 * parseInt(gamesCount, 10));
+            } else {
+                endDateTime.setHours(endDateTime.getHours() + 1);
+                endDateTime.setMinutes(endDateTime.getMinutes() + 30);
+            }
 
             return {
-                id: `${index}`, // уникальный ID
+                id: `${index}`,
                 homeTeam,
                 awayTeam,
                 matchNumber: matchNumber || index,
@@ -60,54 +63,11 @@ export const parseSchedule = (rows: string[][], config: TournamentConfig): Calen
             };
         });
 };
-//
-// export const parseUniversitiesSchedule = (rows: string[][], config: TournamentConfig): CalendarEvent[] => {
-//     if (!rows || !Array.isArray(rows)) return [];
-//
-//     const columns = config.columns;
-//
-//     return rows
-//         .filter((row, index) => index > 0 && row[columns.date] && row[columns.startTime] && row[columns.homeTeam] && row[columns.awayTeam]) // только строки с датой и временем
-//         .map((row, index) => {
-//             // Парсим дату и время
-//             const dateStr = row[columns.date] || '';
-//             const timeStr = row[columns.startTime] || '';
-//
-//             // Проверяем наличие судей
-//             const firstReferee = row[columns.firstReferee]?.trim() || '';
-//             const secondReferee = row[columns.secondReferee]?.trim() || '';
-//             const bothRefereesFilled = Boolean(firstReferee && secondReferee);
-//             const address = row[columns.address]?.trim() || '';
-//
-//             const homeTeam = row[columns.homeTeam]?.trim() || '';
-//             const awayTeam = row[columns.awayTeam]?.trim() || '';
-//
-//             const date = parseDate(dateStr, config.dateFormat);
-//             const time = parseTime(timeStr);
-//
-//             // Комбинируем дату и время
-//             const startDateTime = new Date(date);
-//             startDateTime.setHours(time.hours, time.minutes, 0);
-//
-//             // Время окончания (добавляем 2 часа по умолчанию)
-//             const endDateTime = new Date(startDateTime);
-//             endDateTime.setHours(endDateTime.getHours() + 1);
-//             endDateTime.setMinutes(endDateTime.getMinutes() + 30);
-//
-//             return {
-//                 id: `${index}`, // уникальный ID
-//                 homeTeam,
-//                 awayTeam,
-//                 matchNumber: index,
-//                 address,
-//                 date: dateStr,
-//                 start: startDateTime,
-//                 end: endDateTime,
-//                 startTime: timeStr,
-//                 group: row[columns.group]?.trim() || '',
-//                 firstReferee,
-//                 secondReferee,
-//                 bothRefereesFilled,
-//             };
-//         });
-// };
+
+export const parseMatchesToMessage = (events: CalendarEvent[]) => {
+    let result = '';
+    events.forEach((el) => {
+        result += `${el.date} ${el.address} (${el.homeTeam} - ${el.awayTeam})\n`
+    })
+    return result
+}

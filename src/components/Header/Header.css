@@ -6,6 +6,7 @@
 .header__content {
     display: flex;
     gap: 32px;
+    align-items: center;
 }
 
 .header__logo {
@@ -28,4 +29,76 @@
 
 .nav-links__item:hover {
     text-decoration: underline;
+}
+
+.request {
+    position: relative;
+    padding: 6px 12px;
+    color: white;
+    font-weight: 600;
+    border-radius: 16px;
+    border: 1px solid white;
+    background: transparent;
+    align-self: stretch;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+.request__total {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: rgba(214, 8, 8, 1);
+    color: white;
+    font-weight: 600;
+    height: 16px;
+    line-height: 16px;
+    font-size: 14px;
+    width: 16px;
+    border-radius: 50%;
+}
+
+.selected-matches {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+}
+
+.selected-matches__tournament {
+    margin: 12px 0 0;
+}
+
+.selected-matches__item {
+    padding: 8px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+    gap: 8px;
+    text-align: left;
+    border-top: 1px solid #666666;
+}
+
+.selected-matches__item:first-of-type {
+    border: none;
+}
+
+.button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 12px;
+    padding: 8px 12px;
+    color: white;
+    font-weight: 600;
+}
+
+.button_confirm {
+    background-color: #76b5e1;
+    margin-right: 8px;
+}
+
+.button_reject {
+    background-color: rgba(214, 8, 8, 1);
 }

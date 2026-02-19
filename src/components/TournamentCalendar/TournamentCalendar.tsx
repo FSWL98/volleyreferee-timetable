@@ -48,7 +48,7 @@ export const TournamentCalendar: FC<TournamentCalendarProps> = ({ id, parseFunct
 
     return (
         <div style={{ height: "800px", width: "100%" }}>
-            <MatchCalendar eventsList={parsedData} />
+            <MatchCalendar eventsList={parsedData} tournamentId={id} />
         </div>
     );
 }

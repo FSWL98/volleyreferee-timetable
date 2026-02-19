@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar, dateFnsLocalizer, Views, type View} from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ru } from 'date-fns/locale/ru'; // для русской локализации
@@ -6,6 +6,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { type CalendarEvent } from "../../utils/types.ts";
 import './MatchCalendar.css';
 import Modal from "../Modal/Modal.tsx";
+import { useMatches } from "../../context/matchesContext.tsx";
 
 const locales = {
     'ru': ru
@@ -84,12 +85,29 @@ const CustomEvent = ({ event }: { event: CalendarEvent}) => {
 
 type MatchCalendarProps = {
     eventsList: CalendarEvent[];
+    tournamentId: string;
 }
 
-const MatchCalendar = ({ eventsList }: MatchCalendarProps) => {
+const MatchCalendar = ({ eventsList, tournamentId }: MatchCalendarProps) => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+    const {
+        selectMatch,
+        unselectMatch,
+        isMatchSelected
+    } = useMatches();
+
+    const handleSelectMatch = useCallback(() => {
+        if (!selectedEvent) return;
+        selectMatch(selectedEvent, tournamentId);
+    }, [selectedEvent, tournamentId, selectMatch]);
+
+    const handleUnselectMatch = useCallback(() => {
+        if (!selectedEvent) return;
+        unselectMatch(selectedEvent.id, tournamentId);
+    }, [selectedEvent, tournamentId, unselectMatch]);
 
     useEffect(() => {
         if (eventsList) {
@@ -122,6 +140,11 @@ const MatchCalendar = ({ eventsList }: MatchCalendarProps) => {
     const handleView = useCallback((newView: View) => {
         setView(newView);
     }, []);
+
+    const isSelected: boolean = useMemo(() => {
+        if (!selectedEvent) return false;
+        return isMatchSelected(selectedEvent.id, tournamentId);
+    }, [selectedEvent, isMatchSelected, tournamentId]);
 
     return (
         <div className="calendar-container">
@@ -170,9 +193,9 @@ const MatchCalendar = ({ eventsList }: MatchCalendarProps) => {
                     <span className='match-info__item'>
                         <strong>Адрес зала: </strong>{selectedEvent?.address}
                     </span>
-                    {selectedEvent?.gamesCount && (
+                    {selectedEvent?.gamesCount != 0 && (
                         <span className='match-info__item'>
-                            <strong>Количество игр: </strong>{selectedEvent.gamesCount}
+                            <strong>Количество игр: </strong>{selectedEvent?.gamesCount}
                         </span>
                     )}
                     {selectedEvent?.additionalInfo && (
@@ -183,6 +206,21 @@ const MatchCalendar = ({ eventsList }: MatchCalendarProps) => {
                     <span className='match-info__item'>
                         <strong>Назначенные судьи: </strong>{parseReferees(selectedEvent?.firstReferee, selectedEvent?.secondReferee)}
                     </span>
+
+                    {isSelected && (
+                        <button className='match__select match__select_undo' onClick={handleUnselectMatch}>
+                            Отказаться от матча
+                        </button>
+                    )}
+                    {!isSelected && (
+                        <button
+                            className={`match__select ${selectedEvent?.bothRefereesFilled ? 'match__select_disabled' : ''}`}
+                            onClick={handleSelectMatch}
+                            disabled={selectedEvent?.bothRefereesFilled}
+                        >
+                            Взять матч в назначения
+                        </button>
+                    )}
                 </div>
             </Modal>
         </div>
