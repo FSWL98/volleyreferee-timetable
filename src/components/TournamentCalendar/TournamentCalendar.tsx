@@ -19,12 +19,9 @@ export const TournamentCalendar: FC<TournamentCalendarProps> = ({ id, parseFunct
 
     const {
         data,
-        headers,
         loading,
         error,
-        lastUpdated,
         refresh,
-        isEmpty,
     } = useGoogleSheets(
         config?.spreadsheetId || '',
         config?.sheetName || '',
