@@ -2,7 +2,7 @@ export interface CalendarEvent {
     id: string;
     homeTeam: string;
     awayTeam: string;
-    gameNumber: string | number;
+    matchNumber: string | number;
     address: string;
     date: string;
     start: Date;

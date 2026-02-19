@@ -5,7 +5,7 @@
 export interface TournamentColumnIndices {
     homeTeam: number;
     awayTeam: number;
-    gameNumber?: number;
+    matchNumber?: number;
     address: number;
     date: number;
     startTime: number;
@@ -63,7 +63,7 @@ const tournamentConfig: Record<TournamentId, TournamentConfig> = {
             // Если порядок колонок отличается
             homeTeam: 5,
             awayTeam: 7,
-            gameNumber: 0,
+            matchNumber: 0,
             address: 8,           // адрес в другой колонке
             date: 1,
             startTime: 3,

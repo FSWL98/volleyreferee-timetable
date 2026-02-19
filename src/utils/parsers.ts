@@ -25,7 +25,7 @@ export const parseSchedule = (rows: string[][], config: TournamentConfig): Calen
 
             const homeTeam = row[columns.homeTeam]?.trim() || '';
             const awayTeam = row[columns.awayTeam]?.trim() || '';
-            const gameNumber = columns.gameNumber ? row[columns.gameNumber]?.trim() : '';
+            const matchNumber = columns.matchNumber ? row[columns.matchNumber]?.trim() : '';
             const gamesCount = columns.gamesCount ? row[columns.gamesCount] : 0;
             const additionalInfo = columns.additionalInfo ? row[columns.additionalInfo]?.trim() : '';
 
@@ -45,7 +45,7 @@ export const parseSchedule = (rows: string[][], config: TournamentConfig): Calen
                 id: `${index}`, // уникальный ID
                 homeTeam,
                 awayTeam,
-                gameNumber: gameNumber || index,
+                matchNumber: matchNumber || index,
                 gamesCount,
                 address,
                 date: dateStr,
@@ -98,7 +98,7 @@ export const parseSchedule = (rows: string[][], config: TournamentConfig): Calen
 //                 id: `${index}`, // уникальный ID
 //                 homeTeam,
 //                 awayTeam,
-//                 gameNumber: index,
+//                 matchNumber: index,
 //                 address,
 //                 date: dateStr,
 //                 start: startDateTime,

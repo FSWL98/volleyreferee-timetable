@@ -5,8 +5,8 @@ import { ru } from 'date-fns/locale/ru'; // для русской локализ
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { type CalendarEvent } from "../../utils/types.ts";
 import './MatchCalendar.css';
+import Modal from "../Modal/Modal.tsx";
 
-// Настройка локализации
 const locales = {
     'ru': ru
 };
@@ -15,28 +15,61 @@ const localizer = dateFnsLocalizer({
     format: (date: Date, formatStr: string): string => {
         return format(date, formatStr, { locale: ru });
     },
-
-    // Парсинг строки в дату с локализацией
     parse: (value: string, formatStr: string): Date | null => {
-        // parse из date-fns может вернуть Date или null
         return parse(value, formatStr, new Date(), { locale: ru });
     },
-
-    // Функция для определения первого дня недели (понедельник для ru)
     startOfWeek: (date: Date): Date => {
         return startOfWeek(date, { locale: ru });
     },
-
-    // Функция для получения дня недели (0 - воскресенье, 1 - понедельник, ...)
     getDay: (date: Date): number => {
         return getDay(date);
     },
-
-    // Передаем словарь локалей
     locales
 });
 
-// Кастомный компонент для отображения события
+const parseTournament = (group: string | undefined) => {
+    switch (group) {
+        case '1Ж':
+            return 'Чемпионат ВУЗов. Девушки. 1 группа';
+        case '2Ж':
+            return 'Чемпионат ВУЗов. Девушки. 2 группа';
+        case '3Ж':
+            return 'Чемпионат ВУЗов. Девушки. 3 группа'
+        case '1М':
+            return 'Чемпионат ВУЗов. Мужчины. 1 группа';
+        case '2М':
+            return 'Чемпионат ВУЗов. Мужчины. 2 группа';
+        case '3М':
+            return 'Чемпионат ВУЗов. Мужчины. 3 группа'
+        case 'муж':
+            return 'Чемпионат города. Мужчины'
+        case 'жен':
+            return 'Чемпионат города. Женщины'
+        case 'юн':
+            return 'Первенство города. Юноши'
+        case 'дев':
+            return 'Первенство города. Девушки'
+        default:
+            return 'Турнир не определен'
+    }
+}
+
+const parseReferees = (firstReferee: string | undefined, secondReferee: string | undefined) => {
+    if (!firstReferee && !secondReferee) {
+        return 'судьи не назначены';
+    }
+
+    if (!firstReferee) {
+        return `${secondReferee}`;
+    }
+
+    if (!secondReferee) {
+        return `${firstReferee}`;
+    }
+
+    return `${firstReferee}, ${secondReferee}`;
+}
+
 const CustomEvent = ({ event }: { event: CalendarEvent}) => {
 
     return (
@@ -53,10 +86,10 @@ type MatchCalendarProps = {
     eventsList: CalendarEvent[];
 }
 
-// Основной компонент
 const MatchCalendar = ({ eventsList }: MatchCalendarProps) => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         if (eventsList) {
@@ -65,12 +98,15 @@ const MatchCalendar = ({ eventsList }: MatchCalendarProps) => {
         }
     }, [eventsList]);
 
-    // Обработчик клика по событию
     const handleSelectEvent = (event: CalendarEvent) => {
         setSelectedEvent(event);
+        setIsModalOpen(true);
     };
 
-    // Форматирование даты в заголовке
+    const handleModalClose = useCallback(() => {
+        setIsModalOpen(false);
+    }, [setIsModalOpen]);
+
     const formats = {
         monthHeaderFormat: 'LLLL yyyy',
         dayHeaderFormat: 'dd MMMM yyyy',
@@ -95,19 +131,15 @@ const MatchCalendar = ({ eventsList }: MatchCalendarProps) => {
                 startAccessor="start"
                 endAccessor="end"
                 formats={formats}
-                // Кастомный рендеринг событий
                 components={{
                     event: CustomEvent
                 }}
                 date={date}
                 view={view}
-                // Попап для событий, если их много в одном дне
                 popup
                 onNavigate={handleNavigate}
                 onView={handleView}
-                // Обработчик клика
                 onSelectEvent={handleSelectEvent}
-                // Русские названия месяцев и дней
                 messages={{
                     next: 'Вперед',
                     previous: 'Назад',
@@ -123,6 +155,36 @@ const MatchCalendar = ({ eventsList }: MatchCalendarProps) => {
                     noEventsInRange: 'Нет событий за выбранный период'
                 }}
             />
+            <Modal
+                isOpen={isModalOpen}
+                onClose={handleModalClose}
+                title={`#${selectedEvent?.matchNumber} ${selectedEvent?.homeTeam} — ${selectedEvent?.awayTeam}`}
+            >
+                <div className='match-info'>
+                    <span className='match-info__item'>
+                        <strong>Наименование турнира: </strong>{parseTournament(selectedEvent?.group)}
+                    </span>
+                    <span className='match-info__item'>
+                        <strong>Дата проведения: </strong>{selectedEvent?.date} {selectedEvent?.startTime}
+                    </span>
+                    <span className='match-info__item'>
+                        <strong>Адрес зала: </strong>{selectedEvent?.address}
+                    </span>
+                    {selectedEvent?.gamesCount && (
+                        <span className='match-info__item'>
+                            <strong>Количество игр: </strong>{selectedEvent.gamesCount}
+                        </span>
+                    )}
+                    {selectedEvent?.additionalInfo && (
+                        <span className='match-info__item'>
+                            <strong>Дополнительная информация: </strong>{selectedEvent.additionalInfo}
+                        </span>
+                    )}
+                    <span className='match-info__item'>
+                        <strong>Назначенные судьи: </strong>{parseReferees(selectedEvent?.firstReferee, selectedEvent?.secondReferee)}
+                    </span>
+                </div>
+            </Modal>
         </div>
     );
 };

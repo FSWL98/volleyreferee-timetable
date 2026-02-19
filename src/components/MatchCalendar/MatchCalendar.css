@@ -35,3 +35,8 @@
     width: 100%;
     height: 100%;
 }
+
+.match-info__item {
+    display: block;
+    margin-bottom: 8px;
+}
